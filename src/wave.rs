@@ -2,6 +2,24 @@ use std::f64::consts::PI;
 
 use config::SAMPLE_RATE;
 
+pub fn add<A, B>(lhs: A, rhs: B) -> impl Iterator<Item = f64>
+    where A: IntoIterator<Item = f64>,
+          B: IntoIterator<Item = f64>, {
+
+    lhs.into_iter()
+        .zip(rhs.into_iter())
+        .map(|(a, b)| a + b)
+}
+
+pub fn sub<A, B>(lhs: A, rhs: B) -> impl Iterator<Item = f64>
+    where A: IntoIterator<Item = f64>,
+          B: IntoIterator<Item = f64>, {
+
+    lhs.into_iter()
+        .zip(rhs.into_iter())
+        .map(|(a, b)| a - b)
+}
+
 pub struct Sine {
     amplitude: f64,
     frequency: f64,
