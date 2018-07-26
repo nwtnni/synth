@@ -8,3 +8,4 @@ name = "synth"
 path = "src/main.rs"
 
 [dependencies]
+hound = "3.4.0"
