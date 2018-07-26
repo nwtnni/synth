@@ -1,9 +1,8 @@
-#[macro_use]
-extern crate pipeline;
 extern crate hound;
 extern crate synth;
 
-use synth::wave::{add, Sine};
+use synth::data::Waveform;
+use synth::wave::Sine;
 use synth::filter::{normalize, quantize};
 
 fn main() {
@@ -16,16 +15,11 @@ fn main() {
 
     let mut writer = hound::WavWriter::create("sine.wav", spec).unwrap();
 
-    let waveform = pipe! {
-        add(
-            Sine::new(2.0, 110.0),
-            Sine::new(1.0, 440.0),
-        ).take(44100)
-        => normalize
-        => quantize
-    };
+    let waveform = Waveform::from(Sine::new(50.0, 110.0).take(44100))
+                 + Waveform::from(Sine::new(25.0, 220.0).take(44100))
+                 + Waveform::from(Sine::new(12.5, 440.0).take(44100));
 
-    for sample in waveform {
+    for sample in quantize(waveform.transform(normalize)) {
         writer.write_sample(sample).unwrap();
     }
 }
