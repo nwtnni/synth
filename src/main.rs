@@ -2,7 +2,7 @@ extern crate hound;
 extern crate synth;
 
 use synth::wave::Sine;
-use synth::filter::quantize;
+use synth::filter::{normalize, quantize};
 
 fn main() {
     let spec = hound::WavSpec {
@@ -14,7 +14,7 @@ fn main() {
 
     let mut writer = hound::WavWriter::create("sine.wav", spec).unwrap();
 
-    for sample in quantize(Sine::new(1.0, 440.0).take(44100)) {
+    for sample in quantize(normalize(Sine::new(10000.0, 440.0).take(44100))) {
         writer.write_sample(sample).unwrap();
     }
 }
