@@ -32,8 +32,7 @@ impl <I: NumOps + Zero + Copy, T: Iterator<Item = I>> Waveform<I, T> {
         Waveform((0..lhs.len()).map(move |i| {
             rhs.iter()
                 .enumerate()
-                .skip(1)
-                .map(|(j, r)| *r * lhs[i - j + rhs_half])
+                .map(|(j, r)| *r * *lhs.get(i - j + rhs_half).unwrap_or(&I::zero()))
                 .fold(I::zero(), |a, b| a + b)
         }))
     }
