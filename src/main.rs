@@ -15,7 +15,7 @@ fn main() {
 
     let mut writer = hound::WavWriter::create("sine.wav", spec).unwrap();
 
-    let waveform = Waveform::from(Sawtooth::new(1.0, 440.0))
+    let waveform = Waveform::from(Square::new(1.0, 440.0))
         .take(44100 * 4)
         .transform(normalize)
         .transform(quantize);

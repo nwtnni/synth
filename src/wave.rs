@@ -2,6 +2,18 @@ use std::f64::consts::PI;
 
 use config::SAMPLE_RATE;
 
+const SAW: &'static [f64; 10] = &[
+    1.0,  2.0,  3.0,  4.0,  5.0,
+    6.0,  7.0,  8.0,  9.0,  10.0,
+];
+
+const SQUARE: &'static [f64; 10] = &[
+    1.0,  3.0,  5.0,  7.0,  9.0,
+    11.0, 13.0, 15.0, 17.0, 19.0,
+];
+
+const TAU: f64 = PI * 2.0;
+
 pub struct Sine {
     amplitude: f64,
     frequency: f64,
@@ -17,7 +29,7 @@ impl Sine {
 impl Iterator for Sine {
     type Item = f64;
     fn next(&mut self) -> Option<Self::Item> {
-        let next = Some(self.amplitude * (2.0 * PI * self.frequency * self.time).sin());
+        let next = Some(self.amplitude * (TAU * self.frequency * self.time).sin());
         self.time += 1.0 / SAMPLE_RATE;
         next
     }
@@ -38,7 +50,28 @@ impl Sawtooth {
 impl Iterator for Sawtooth {
     type Item = f64;
     fn next(&mut self) -> Option<Self::Item> {
-        let next = Some((1..50).map(|n| self.amplitude * (n as f64 * 2.0 * PI * self.frequency * self.time).sin()).sum::<f64>() / 50.0);
+        let next = Some(SAW.iter().map(|n| self.amplitude * (TAU * n * self.frequency * self.time).sin()).sum::<f64>() / 50.0);
+        self.time += 1.0 / SAMPLE_RATE;
+        next
+    }
+}
+
+pub struct Square {
+    amplitude: f64,
+    frequency: f64,
+    time: f64,
+}
+
+impl Square {
+    pub fn new(amplitude: f64, frequency: f64) -> Self {
+        Square { amplitude, frequency, time: 0.0 }
+    }
+}
+
+impl Iterator for Square {
+    type Item = f64;
+    fn next(&mut self) -> Option<Self::Item> {
+        let next = Some(SQUARE.iter().map(|n| self.amplitude * (TAU * n * self.frequency * self.time).sin()).sum::<f64>() / 50.0);
         self.time += 1.0 / SAMPLE_RATE;
         next
     }
