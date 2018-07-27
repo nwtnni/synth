@@ -2,7 +2,7 @@ extern crate hound;
 extern crate synth;
 
 use synth::data::Waveform;
-use synth::wave::Sine;
+use synth::wave::*;
 use synth::filter::{normalize, quantize};
 
 fn main() {
@@ -15,10 +15,8 @@ fn main() {
 
     let mut writer = hound::WavWriter::create("sine.wav", spec).unwrap();
 
-    let waveform = Waveform::from(Sine::new(50.0, 110.0))
-        .add(Waveform::from(Sine::new(25.0, 220.0)))
-        .add(Waveform::from(Sine::new(12.5, 440.0)))
-        .take(44100)
+    let waveform = Waveform::from(Sawtooth::new(1.0, 440.0))
+        .take(44100 * 4)
         .transform(normalize)
         .transform(quantize);
 
