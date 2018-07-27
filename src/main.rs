@@ -15,11 +15,14 @@ fn main() {
 
     let mut writer = hound::WavWriter::create("sine.wav", spec).unwrap();
 
-    let waveform = Waveform::from(Sine::new(50.0, 110.0).take(44100))
-                 + Waveform::from(Sine::new(25.0, 220.0).take(44100))
-                 + Waveform::from(Sine::new(12.5, 440.0).take(44100));
+    let waveform = Waveform::from(Sine::new(50.0, 110.0))
+        .add(Waveform::from(Sine::new(25.0, 220.0)))
+        .add(Waveform::from(Sine::new(12.5, 440.0)))
+        .take(44100)
+        .transform(normalize)
+        .transform(quantize);
 
-    for sample in quantize(waveform.transform(normalize)) {
+    for sample in waveform {
         writer.write_sample(sample).unwrap();
     }
 }

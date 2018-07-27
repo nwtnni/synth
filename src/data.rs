@@ -1,102 +1,31 @@
-use std::ops::{Add, Sub};
-use std::iter;
-use std::vec;
-use std::slice;
+use num_traits::NumOps;
 
-pub struct Waveform {
-    data: Vec<f64>,
-}
+pub struct Waveform<I: NumOps, T: Iterator<Item = I>>(T);
 
-impl Waveform {
-    pub fn from<T: IntoIterator<Item = f64>>(iter: T) -> Self {
-        Waveform { data: iter.into_iter().collect() }
+impl <I: NumOps, T: Iterator<Item = I>> Waveform<I, T> {
+    pub fn from(iter: T) -> Self {
+        Waveform(iter)
     }
 
-    pub fn transform<F, T>(self, f: F) -> Self
-        where T: IntoIterator<Item = f64>,
-              F: Fn(Vec<f64>) -> T {
-        
-        Waveform { data: f(self.data).into_iter().collect() }
+    pub fn transform<F, J: NumOps, O: Iterator<Item = J>>(self, f: F) -> Waveform<J, O> where F: Fn(T) -> O {
+        Waveform(f(self.0))
     }
-}
 
-impl IntoIterator for Waveform {
-    type Item = f64;
-    type IntoIter = vec::IntoIter<f64>;
+    pub fn add<Y: Iterator<Item = I>>(self, waveform: Waveform<I, Y>) -> Waveform<I, impl Iterator<Item = I>> {
+        Waveform(self.0.zip(waveform.0).map(|(a, b)| a + b))
+    }
 
-    fn into_iter(self) -> Self::IntoIter {
-        self.data.into_iter()
+    pub fn sub<Y: Iterator<Item = I>>(self, waveform: Waveform<I, Y>) -> Waveform<I, impl Iterator<Item = I>> {
+        Waveform(self.0.zip(waveform.0).map(|(a, b)| a - b))
+    }
+
+    pub fn take(self, count: usize) -> Waveform<I, impl Iterator<Item = I>> {
+        Waveform(self.0.take(count))
     }
 }
 
-impl <'a> IntoIterator for &'a Waveform {
-    type Item = &'a f64;
-    type IntoIter = slice::Iter<'a, f64>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.data.iter()
-    }
-}
-
-impl Add for Waveform {
-    type Output = Waveform;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Waveform {
-            data: self.data.into_iter()
-                    .zip(rhs.data)
-                    .map(|(a, b)| a + b)
-                    .collect()
-        }
-    }
-}
-
-impl <'a> Add for &'a Waveform {
-    type Output = Waveform;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Waveform {
-            data: self.data.iter()
-                    .zip(&rhs.data)
-                    .map(|(a, b)| a + b)
-                    .collect()
-        }
-    }
-}
-
-impl Sub for Waveform {
-    type Output = Waveform;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Waveform {
-            data: self.data.into_iter()
-                    .zip(rhs.data)
-                    .map(|(a, b)| a - b)
-                    .collect()
-        }
-    }
-}
-
-impl <'a> Sub for &'a Waveform {
-    type Output = Waveform;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Waveform {
-            data: self.data.iter()
-                    .zip(&rhs.data)
-                    .map(|(a, b)| a - b)
-                    .collect()
-        }
-    }
-}
-
-impl iter::Sum for Waveform {
-    fn sum<I>(mut iter: I) -> Self where I: Iterator<Item = Self> {
-        let waveform = iter.next();
-        if let Some(data) = waveform {
-            iter.fold(data, |a, b| a + b)
-        } else {
-            Waveform { data: Vec::new() }
-        }
-    }
+impl <I: NumOps, T: Iterator<Item = I>> IntoIterator for Waveform<I, T> {
+    type Item = I;
+    type IntoIter = T;
+    fn into_iter(self) -> Self::IntoIter { self.0 }
 }
