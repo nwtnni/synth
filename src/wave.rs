@@ -50,7 +50,7 @@ impl Sawtooth {
 impl Iterator for Sawtooth {
     type Item = f64;
     fn next(&mut self) -> Option<Self::Item> {
-        let next = Some(SAW.iter().map(|n| self.amplitude * (TAU * n * self.frequency * self.time).sin()).sum::<f64>() / 50.0);
+        let next = Some(SAW.iter().map(|n| self.amplitude * (TAU * n * self.frequency * self.time).sin()).sum::<f64>() / 10.0);
         self.time += 1.0 / SAMPLE_RATE;
         next
     }
@@ -71,7 +71,7 @@ impl Square {
 impl Iterator for Square {
     type Item = f64;
     fn next(&mut self) -> Option<Self::Item> {
-        let next = Some(SQUARE.iter().map(|n| self.amplitude * (TAU * n * self.frequency * self.time).sin()).sum::<f64>() / 50.0);
+        let next = Some(SQUARE.iter().map(|n| self.amplitude * (TAU * n * self.frequency * self.time).sin()).sum::<f64>() / 10.0);
         self.time += 1.0 / SAMPLE_RATE;
         next
     }
