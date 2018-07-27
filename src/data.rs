@@ -1,13 +1,14 @@
 use num_traits::NumOps;
+use num_traits::identities::Zero;
 
-pub struct Waveform<I: NumOps + Copy, T: Iterator<Item = I>>(T);
+pub struct Waveform<I: NumOps + Zero + Copy, T: Iterator<Item = I>>(T);
 
-impl <I: NumOps + Copy, T: Iterator<Item = I>> Waveform<I, T> {
+impl <I: NumOps + Zero + Copy, T: Iterator<Item = I>> Waveform<I, T> {
     pub fn from(iter: T) -> Self {
         Waveform(iter)
     }
 
-    pub fn transform<F, J: NumOps + Copy, O: Iterator<Item = J>>(self, f: F) -> Waveform<J, O> where F: Fn(T) -> O {
+    pub fn transform<F, J: NumOps + Zero + Copy, O: Iterator<Item = J>>(self, f: F) -> Waveform<J, O> where F: Fn(T) -> O {
         Waveform(f(self.0))
     }
 
@@ -26,19 +27,19 @@ impl <I: NumOps + Copy, T: Iterator<Item = I>> Waveform<I, T> {
     pub fn convolve<Y: Iterator<Item = I>>(self, waveform: Waveform<I, Y>) -> Waveform<I, impl Iterator<Item = I>> {
         let lhs = self.into_iter().collect::<Vec<_>>();
         let rhs = waveform.into_iter().collect::<Vec<_>>();
-        let mut output = Vec::with_capacity(lhs.len() + rhs.len());
+        let rhs_half = rhs.len() / 2;
 
-        for (i, l) in lhs.iter().enumerate() {
-            for (j, r) in rhs.iter().enumerate() {
-                output[i + j] = *l * *r;
-            }
-        }
-
-        Waveform(output.into_iter())
+        Waveform((0..lhs.len()).map(move |i| {
+            rhs.iter()
+                .enumerate()
+                .skip(1)
+                .map(|(j, r)| *r * lhs[i - j + rhs_half])
+                .fold(I::zero(), |a, b| a + b)
+        }))
     }
 }
 
-impl <I: NumOps + Copy, T: Iterator<Item = I>> IntoIterator for Waveform<I, T> {
+impl <I: NumOps + Zero + Copy, T: Iterator<Item = I>> IntoIterator for Waveform<I, T> {
     type Item = I;
     type IntoIter = T;
     fn into_iter(self) -> Self::IntoIter { self.0 }
