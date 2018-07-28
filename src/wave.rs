@@ -14,6 +14,7 @@ const SQUARE: &'static [f64; 10] = &[
 
 const TAU: f64 = PI * 2.0;
 
+#[derive(Clone, Copy)]
 pub struct Sine {
     amplitude: f64,
     frequency: f64,
@@ -35,6 +36,7 @@ impl Iterator for Sine {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct Sawtooth {
     amplitude: f64,
     frequency: f64,
@@ -56,6 +58,7 @@ impl Iterator for Sawtooth {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct Square {
     amplitude: f64,
     frequency: f64,
