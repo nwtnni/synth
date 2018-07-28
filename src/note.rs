@@ -6,7 +6,7 @@ pub enum Note {
 }
 
 impl Note {
-    pub fn new(self, amplitude: f64) -> Waveform<f64, impl Iterator<Item = f64> + Clone> {
+    pub fn with(self, amplitude: f64, duration: f64) -> Waveform<f64, impl Iterator<Item = f64> + Clone> {
         let frequency = match self {
         | Note::A => 440.0,
         | Note::B => 494.0,
@@ -17,6 +17,7 @@ impl Note {
         | Note::G => 784.0,
         };
         
-        Waveform::from(Sawtooth::new(amplitude, frequency))
+        Waveform::from(Sine::new(amplitude, frequency))
+            .with_duration(duration)
     }
 }
