@@ -79,3 +79,13 @@ impl Iterator for Square {
         next
     }
 }
+
+#[derive(Copy, Clone)]
+pub struct Silence {}
+
+impl Iterator for Silence {
+    type Item = f64;
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(0.0)
+    }
+}

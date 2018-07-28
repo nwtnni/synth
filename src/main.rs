@@ -16,22 +16,26 @@ fn main() {
 
     let mut writer = hound::WavWriter::create("sine.wav", spec).unwrap();
 
-    let waveform = Note::new(Note::E, 1.0).with_duration(0.5).add(Note::new(Note::G, 1.0).with_duration(0.5))
-
+    let waveform = Note::new(Note::E, 1.0).with_duration(0.45).add(Note::new(Note::G, 1.0).with_duration(0.45))
+        .append(Waveform::from(Silence {}).with_duration(0.05))
         .append(
-            Note::new(Note::D, 1.0).with_duration(0.5).add(Note::new(Note::F, 1.0).with_duration(0.5))
+            Note::new(Note::D, 1.0).with_duration(0.45).add(Note::new(Note::F, 1.0).with_duration(0.45))
         )
+        .append(Waveform::from(Silence {}).with_duration(0.05))
         .append(
-            Note::new(Note::C, 1.0).with_duration(0.5).add(Note::new(Note::E, 1.0).with_duration(0.5))
+            Note::new(Note::C, 1.0).with_duration(0.45).add(Note::new(Note::E, 1.0).with_duration(0.45))
         )
+        .append(Waveform::from(Silence {}).with_duration(0.05))
         .append(
-            Note::new(Note::D, 1.0).with_duration(0.5).add(Note::new(Note::F, 1.0).with_duration(0.5))
+            Note::new(Note::D, 1.0).with_duration(0.45).add(Note::new(Note::F, 1.0).with_duration(0.45))
         )
-        .append(
-            Note::new(Note::E, 1.0).with_duration(0.5).add(Note::new(Note::G, 1.0).with_duration(0.5))
-        )
+        .append(Waveform::from(Silence {}).with_duration(0.05))
+        // .append(
+        //     Note::new(Note::E, 1.0).with_duration(0.45).add(Note::new(Note::G, 1.0).with_duration(0.45))
+        // )
+        // .append(Waveform::from(Silence {}).with_duration(0.05))
         .cycle()
-        .with_duration(10.0)
+        .with_duration(8.0)
         .transform(normalize)
         .transform(quantize);
 
