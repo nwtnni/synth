@@ -22,6 +22,12 @@ const SQUARE: &'static [f64; 10] = &[
 
 const TAU: f64 = PI * 2.0;
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum Mode {
+    Amplitude,
+    Frequency,
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct Wave {
     initial_amplitude: f64,
@@ -41,6 +47,13 @@ impl Wave {
             frequency,
             time: 0.0,
             shape,
+        }
+    }
+
+    pub fn apply(&mut self, mode: Mode, f: &Fn(f64, f64) -> f64) {
+        match mode {
+        | Mode::Amplitude => self.amplitude = f(self.initial_amplitude, self.amplitude),
+        | Mode::Frequency => self.frequency = f(self.initial_frequency, self.frequency),
         }
     }
 }
