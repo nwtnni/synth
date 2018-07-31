@@ -15,7 +15,7 @@ pub struct Envelope {
 #[derive(Debug, Copy, Clone)]
 pub enum Shape {
     Line {
-        offset: f64, 
+        offset: f64,
         slope: f64,
     },
 
@@ -24,9 +24,9 @@ pub enum Shape {
     },
 
     Sine {
+        offset: f64,
         amplitude: f64,
         frequency: f64,
-        offset: f64,
     },
 }
 
@@ -42,16 +42,18 @@ impl Envelope {
 
     pub fn exponential(ratio: f64, start: f64, stop: f64) -> Self {
         Envelope {
-            shape: Shape::Exp { ratio },
+            shape: Shape::Exp {
+                ratio: (ratio.ln() / SAMPLE_RATE).exp(),
+            },
             time: 0.0,
             start,
             stop,
         }
     }
 
-    pub fn sine(amplitude: f64, frequency: f64, offset: f64, start: f64, stop: f64) -> Self {
+    pub fn sine(offset: f64, amplitude: f64, frequency: f64, start: f64, stop: f64) -> Self {
         Envelope {
-            shape: Shape::Sine { amplitude, frequency, offset },
+            shape: Shape::Sine { offset, amplitude, frequency },
             time: 0.0,
             start,
             stop,

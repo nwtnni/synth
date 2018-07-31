@@ -13,15 +13,37 @@ pub enum Sound {
 }
 
 impl Sound {
-    fn apply_to_waves(&mut self, mode: Mode, f: &Fn(f64, f64) -> f64) {
+    pub fn clip(self, time: f64) -> Self {
+        Sound::Clip(time, Box::new(self))
+    }
+
+    pub fn envelop(self, mode: Mode, envelope: Envelope) -> Self {
+        Sound::Env(mode, envelope, Box::new(self)) 
+    }
+
+    pub fn sum<I>(sounds: I) -> Self where I: IntoIterator<Item = Self> {
+        Sound::Sum(sounds.into_iter().collect())
+    }
+
+    pub fn chain<I>(sounds: I) -> Self where I: IntoIterator<Item = Self> {
+        Sound::Seq(sounds.into_iter().collect())
+    }
+
+    fn apply(&mut self, mode: Mode, f: &Fn(f64, f64) -> f64) {
         match self {
         | Sound::Wave(wave) => wave.apply(mode, f),
-        | Sound::Env(_, _, sound) => sound.apply_to_waves(mode, f),
-        | Sound::Seq(sounds) => for sound in sounds { sound.apply_to_waves(mode, f) },
-        | Sound::Sum(sounds) => for sound in sounds { sound.apply_to_waves(mode, f) },
-        | Sound::Sub(l, r) => { l.apply_to_waves(mode, f); r.apply_to_waves(mode, f); },
-        | Sound::Clip(_, sound) => sound.apply_to_waves(mode, f),
+        | Sound::Env(_, _, sound) => sound.apply(mode, f),
+        | Sound::Seq(sounds) => for sound in sounds { sound.apply(mode, f) },
+        | Sound::Sum(sounds) => for sound in sounds { sound.apply(mode, f) },
+        | Sound::Sub(l, r) => { l.apply(mode, f); r.apply(mode, f); },
+        | Sound::Clip(_, sound) => sound.apply(mode, f),
         }
+    }
+}
+
+impl Into<Sound> for Wave {
+    fn into(self) -> Sound {
+        Sound::Wave(self)
     }
 }
 
@@ -36,7 +58,7 @@ impl Iterator for Sound {
 
             let next = sound.next();
             if let Some(f) = env.next() {
-                sound.apply_to_waves(*mode, &*f);
+                sound.apply(*mode, &*f);
                 next
             } else {
                 None
