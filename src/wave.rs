@@ -24,6 +24,8 @@ const TAU: f64 = PI * 2.0;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Wave {
+    initial_amplitude: f64,
+    initial_frequency: f64,
     amplitude: f64, 
     frequency: f64,
     time: f64,
@@ -33,6 +35,8 @@ pub struct Wave {
 impl Wave {
     pub fn new(shape: Shape, amplitude: f64, frequency: f64) -> Self {
         Wave {
+            initial_amplitude: amplitude,
+            initial_frequency: frequency,
             amplitude,
             frequency,
             time: 0.0,
