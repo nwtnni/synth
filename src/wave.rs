@@ -30,6 +30,17 @@ pub struct Wave {
     shape: Shape,
 }
 
+impl Wave {
+    pub fn new(shape: Shape, amplitude: f64, frequency: f64) -> Self {
+        Wave {
+            amplitude,
+            frequency,
+            time: 0.0,
+            shape,
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum Shape {
     Silence,
