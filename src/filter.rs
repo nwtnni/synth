@@ -9,7 +9,7 @@ pub fn normalize<I: Iterator<Item = f64> + Clone>(samples: I) -> impl Iterator<I
     let peak = *normalized
         .iter()
         .max_by(|a, b| a.partial_cmp(b).unwrap())
-        .expect("Internal error: no max");
+        .expect("Internal error: no max") * 1.10;
 
     normalized.into_iter().map(move |sample| sample / peak) 
 }
