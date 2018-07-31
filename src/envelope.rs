@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use config::SAMPLE_RATE;
+use config::{DELTA, SAMPLE_RATE};
 
 const TAU: f64 = PI * 2.0;
 
@@ -8,14 +8,11 @@ const TAU: f64 = PI * 2.0;
 pub struct Envelope {
     shape: Shape,
     time: f64,
-    start: f64,
-    stop: f64,
 }
 
 #[derive(Debug, Copy, Clone)]
 pub enum Shape {
     Line {
-        offset: f64,
         slope: f64,
     },
 
@@ -24,65 +21,56 @@ pub enum Shape {
     },
 
     Sine {
-        offset: f64,
         amplitude: f64,
         frequency: f64,
     },
 }
 
 impl Envelope {
-    pub fn linear(offset: f64, slope: f64, start: f64, stop: f64) -> Self {
+    pub fn linear(slope: f64) -> Self {
         Envelope {
-            shape: Shape::Line { offset, slope },
+            shape: Shape::Line { slope: slope / SAMPLE_RATE },
             time: 0.0,
-            start,
-            stop,
         }
     }
 
-    pub fn exponential(ratio: f64, start: f64, stop: f64) -> Self {
+    pub fn exponential(ratio: f64) -> Self {
         Envelope {
             shape: Shape::Exp {
                 ratio: (ratio.ln() / SAMPLE_RATE).exp(),
             },
             time: 0.0,
-            start,
-            stop,
         }
     }
 
-    pub fn sine(offset: f64, amplitude: f64, frequency: f64, start: f64, stop: f64) -> Self {
+    pub fn sine(amplitude: f64, frequency: f64) -> Self {
         Envelope {
-            shape: Shape::Sine { offset, amplitude, frequency },
+            shape: Shape::Sine { amplitude, frequency },
             time: 0.0,
-            start,
-            stop,
         }
     }
 }
 
 impl Iterator for Envelope {
 
-    type Item = Box<Fn(f64, f64) -> f64>;
+    type Item = Box<Fn(f64) -> f64>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let time = self.time;
-
-        self.time += 1.0 / SAMPLE_RATE;
-
-        if time < self.start || time > self.stop { return None }
-
+        self.time += DELTA;
         Some(
             match self.shape {
-                | Shape::Line{offset, slope} => {
-                    Box::new(move |initial, _| offset + initial + (slope * time))
+                | Shape::Line{slope} => {
+                    Box::new(move |value| value + slope)
                 }
                 | Shape::Exp{ratio} => {
-                    Box::new(move |_, current| current * ratio)
+                    Box::new(move |value| value * ratio)
                 }
-                | Shape::Sine{amplitude, frequency, offset} => {
-                    Box::new(move |initial, _| {
-                        initial + offset + (amplitude * (TAU * frequency * time).sin())
+                | Shape::Sine{amplitude, frequency} => {
+                    Box::new(move |value| {
+                        let previous = (TAU * frequency * (time - DELTA)).sin();
+                        let current = (TAU * frequency * time).sin();
+                        value + amplitude * (current - previous)
                     })
                 }
             }

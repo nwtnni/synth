@@ -25,13 +25,17 @@ fn main() {
         ])
         .envelop(
             Mode::Frequency,
-            Envelope::sine(0.0, 0.20, 5.0, 0.0, 100.0),
+            Envelope::sine(0.05, 5.0),
         )
         .envelop(
             Mode::Amplitude,
-            Envelope::exponential(0.30, 0.0, 100.0),
+            Envelope::exponential(0.60),
         )
-        .clip(5.0);
+        .envelop(
+            Mode::Frequency,
+            Envelope::linear(10.0),
+        )
+        .clip(10.0);
 
     for sample in quantize(normalize(waveform)) {
         writer.write_sample(sample).unwrap();

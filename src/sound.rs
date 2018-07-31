@@ -29,7 +29,7 @@ impl Sound {
         Sound::Seq(sounds.into_iter().collect())
     }
 
-    fn apply(&mut self, mode: Mode, f: &Fn(f64, f64) -> f64) {
+    fn apply(&mut self, mode: Mode, f: &Fn(f64) -> f64) {
         match self {
         | Sound::Wave(wave) => wave.apply(mode, f),
         | Sound::Env(_, _, sound) => sound.apply(mode, f),

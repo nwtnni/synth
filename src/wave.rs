@@ -30,8 +30,6 @@ pub enum Mode {
 
 #[derive(Copy, Clone, Debug)]
 pub struct Wave {
-    initial_amplitude: f64,
-    initial_frequency: f64,
     amplitude: f64, 
     frequency: f64,
     time: f64,
@@ -41,8 +39,6 @@ pub struct Wave {
 impl Wave {
     pub fn new(shape: Shape, amplitude: f64, frequency: f64) -> Self {
         Wave {
-            initial_amplitude: amplitude,
-            initial_frequency: frequency,
             amplitude,
             frequency,
             time: 0.0,
@@ -50,10 +46,10 @@ impl Wave {
         }
     }
 
-    pub fn apply(&mut self, mode: Mode, f: &Fn(f64, f64) -> f64) {
+    pub fn apply(&mut self, mode: Mode, f: &Fn(f64) -> f64) {
         match mode {
-        | Mode::Amplitude => self.amplitude = f(self.initial_amplitude, self.amplitude),
-        | Mode::Frequency => self.frequency = f(self.initial_frequency, self.frequency),
+        | Mode::Amplitude => self.amplitude = f(self.amplitude),
+        | Mode::Frequency => self.frequency = f(self.frequency),
         }
     }
 }
