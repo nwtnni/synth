@@ -33,15 +33,15 @@ impl Iterator for Sound {
             sounds.iter_mut()
                 .map(|sound| sound.next())
                 .fold(Some(0.0), |a, b| {
-                    match b {
-                    | Some(amplitude) => Some(a.unwrap() + amplitude),
-                    | None => None,
+                    match (a, b) {
+                    | (Some(a), Some(b)) => Some(a + b),
+                    | _ => None,
                     }
                 })
         }
         | Sound::Sub(left, right) => {
             match (left.next(), right.next()) {
-            | (Some(l_amplitude), Some(r_amplitude)) => Some(l_amplitude - r_amplitude),
+            | (Some(a), Some(b)) => Some(a - b),
             | _ => None,
             }
         }
