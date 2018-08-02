@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use config::SAMPLE_RATE;
+use constants::DELTA;
 
 const SILENCE: &'static [f64; 1] = &[
     0.0,
@@ -91,7 +91,7 @@ impl Iterator for Wave {
             .map(|coefficient| self.amplitude * (coefficient * TAU * self.frequency * self.time).sin())
             .sum::<f64>() / self.shape.size();
 
-        self.time += 1.0 / SAMPLE_RATE;
+        self.time += DELTA;
         Some(next)
     }
 }

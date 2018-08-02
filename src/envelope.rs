@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use config::{DELTA, SAMPLE_RATE};
+use constants::{DELTA, SAMPLE_RATE};
 
 const TAU: f64 = PI * 2.0;
 

@@ -1,4 +1,4 @@
-use config::SAMPLE_RATE;
+use constants::SAMPLE_RATE;
 use envelope::Envelope;
 use wave::{Mode, Wave};
 
