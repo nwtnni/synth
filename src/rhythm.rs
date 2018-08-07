@@ -1,3 +1,6 @@
+use std::ops::Mul;
+
+#[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
 pub struct Beat(f64);
 
 pub const W: Beat = Beat(4.0000);
@@ -18,5 +21,13 @@ impl Beat {
 
     pub fn halve(self) -> Self {
         Beat(self.0 / 2.0)
+    }
+}
+
+impl Mul<f64> for Beat {
+    type Output = f64;
+
+    fn mul(self, other: f64) -> f64 {
+        self.0 * other
     }
 }

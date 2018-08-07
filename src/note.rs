@@ -36,3 +36,9 @@ impl Note {
         Note(self.0 / 2.0)
     }
 }
+
+impl Into<f64> for Note {
+    fn into(self) -> f64 {
+        self.0
+    }
+}
