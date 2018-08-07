@@ -1,12 +1,13 @@
-#![recursion_limit="128"]
-
-extern crate hound;
+#[macro_use]
 extern crate synth;
+extern crate hound;
 
-use synth::sound::*;
 use synth::filter::{normalize, quantize};
-use synth::wave::{Mode, Wave, Shape};
-use synth::envelope::Envelope;
+use synth::track::*;
+use synth::instrument::Bell;
+use synth::rhythm;
+use synth::dynamic;
+use synth::note;
 
 fn main() {
     let spec = hound::WavSpec {
@@ -18,28 +19,45 @@ fn main() {
 
     let mut writer = hound::WavWriter::create("sine.wav", spec).unwrap();
 
-    let waveform = Sound::sum(vec![
-            Wave::new(Shape::Sawtooth, 1.0, 440.0).into(),
-            Wave::new(Shape::Sawtooth, 1.0, 554.37).into(),
-            Wave::new(Shape::Sawtooth, 1.0, 659.25).into(),
-        ])
-        // .envelop(
-        //     Mode::Amplitude,
-        //     Envelope::sine(1.0, 0.5),
-        // )
-        .envelop(
-            Mode::Amplitude,
-            Envelope::exponential(0.025),
-        )
-        // .envelop(
-        //     Mode::Frequency,
-        //     Envelope::linear(10.0),
-        // )
-        // .envelop(
-        //     Mode::Frequency,
-        //     Envelope::sine(0.01, 5.0),
-        // )
-        .clip(0.5);
+    let mut bell = Bell::new(0.005);
+
+    let track = track! {
+        note::E => dynamic::MF, rhythm::Q;
+        note::D => dynamic::MF, rhythm::Q;
+        note::C => dynamic::MF, rhythm::Q;
+        note::D => dynamic::MF, rhythm::Q;
+
+        note::E => dynamic::MF, rhythm::Q;
+        note::E => dynamic::MF, rhythm::Q;
+        note::E => dynamic::MF, rhythm::H;
+
+        note::D => dynamic::MF, rhythm::Q;
+        note::D => dynamic::MF, rhythm::Q;
+        note::D => dynamic::MF, rhythm::H;
+
+        note::E => dynamic::MF, rhythm::Q;
+        note::G => dynamic::MF, rhythm::Q;
+        note::G => dynamic::MF, rhythm::H;
+
+        note::E => dynamic::MF, rhythm::Q;
+        note::D => dynamic::MF, rhythm::Q;
+        note::C => dynamic::MF, rhythm::Q;
+        note::D => dynamic::MF, rhythm::Q;
+
+        note::E => dynamic::MF, rhythm::Q;
+        note::E => dynamic::MF, rhythm::Q;
+        note::E => dynamic::MF, rhythm::Q;
+        note::C => dynamic::MF, rhythm::Q;
+
+        note::D => dynamic::MF, rhythm::Q;
+        note::D => dynamic::MF, rhythm::Q;
+        note::E => dynamic::MF, rhythm::Q;
+        note::D => dynamic::MF, rhythm::Q;
+
+        note::C => dynamic::MF, rhythm::W;
+    };
+
+    let waveform = convert(track, dynamic::MF, 120.0, &mut bell);
 
     for sample in quantize(normalize(waveform)) {
         writer.write_sample(sample).unwrap();
