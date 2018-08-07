@@ -1,5 +1,4 @@
 extern crate hound;
-extern crate num_traits;
 
 pub mod constants;
 pub mod envelope;
