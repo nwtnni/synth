@@ -57,7 +57,8 @@ fn main() {
         note::C => dynamic::MF, rhythm::W;
     };
 
-    let waveform = convert(track, dynamic::MF, 120.0, &mut bell);
+    let waveform = convert(track, dynamic::MF, 240.0, &mut bell)
+        .repeat(5);
 
     for sample in quantize(normalize(waveform)) {
         writer.write_sample(sample).unwrap();

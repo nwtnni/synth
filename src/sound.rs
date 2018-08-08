@@ -29,6 +29,14 @@ impl Sound {
         Sound::Seq(sounds.into_iter().collect())
     }
 
+    pub fn repeat(&self, times: usize) -> Self {
+        let mut seq = Vec::new();
+        for _ in 0..times {
+            seq.push(self.clone());
+        }
+        Sound::Seq(seq)
+    }
+
     fn apply(&mut self, mode: Mode, f: &Fn(f64) -> f64) {
         match self {
         | Sound::Wave(wave) => wave.apply(mode, f),
