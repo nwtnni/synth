@@ -1,3 +1,5 @@
+use std::ops::Mul;
+
 use constants::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]

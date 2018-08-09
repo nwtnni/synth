@@ -8,6 +8,7 @@ use synth::instrument::Bell;
 use synth::rhythm;
 use synth::dynamic;
 use synth::note;
+use synth::sound;
 
 fn main() {
     let spec = hound::WavSpec {
@@ -22,6 +23,7 @@ fn main() {
     let mut bell = Bell::new(0.005);
 
     let track = track! {
+        dynamic::MF, 120.0;
         note::E => dynamic::MF, rhythm::Q;
         note::D => dynamic::MF, rhythm::Q;
         note::C => dynamic::MF, rhythm::Q;
@@ -57,8 +59,13 @@ fn main() {
         note::C => dynamic::MF, rhythm::W;
     };
 
-    let waveform = convert(track, dynamic::MF, 240.0, &mut bell)
-        .repeat(5);
+    let waveform = sound::Sound::Sum(vec![
+        track.convert(&mut bell),
+        track.map(|(note, dynamic, beat)| {
+            (note.octave_up(), dynamic, beat)
+        })
+        .convert(&mut bell),
+    ]);
 
     for sample in quantize(normalize(waveform)) {
         writer.write_sample(sample).unwrap();
