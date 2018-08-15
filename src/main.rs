@@ -61,7 +61,7 @@ fn main() {
 
     let waveform = sound::Sound::Sum(vec![
         track.convert(&mut bell),
-        track.map(|(note, dynamic, beat)| {
+        track.map(|note, dynamic, beat| {
             (note.octave_up(), dynamic, beat)
         })
         .convert(&mut bell),

@@ -36,11 +36,11 @@ impl Track {
         self.samples.push((note, dynamic, beat));
     }
 
-    pub fn map<F>(&self, f: F) -> Self where F: FnMut((Note, Dynamic, Beat)) -> (Note, Dynamic, Beat) {
+    pub fn map<F>(&self, mut f: F) -> Self where F: FnMut(Note, Dynamic, Beat) -> (Note, Dynamic, Beat) {
         Track {
             samples: self.samples.iter()
                 .cloned()
-                .map(f)
+                .map(|(n, d, b)| f(n, d, b))
                 .collect(),
             dynamic: self.dynamic,
             bpm: self.bpm,
