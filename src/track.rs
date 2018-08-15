@@ -47,6 +47,18 @@ impl Track {
         }
     }
 
+    pub fn map_melody<F>(&self, mut f: F) -> Self where F: FnMut(Note) -> Note {
+        self.map(|n, d, b| (f(n), d, b))
+    }
+
+    pub fn map_dynamic<F>(&self, mut f: F) -> Self where F: FnMut(Dynamic) -> Dynamic {
+        self.map(|n, d, b| (n, f(d), b))
+    }
+
+    pub fn map_rhythm<F>(&self, mut f: F) -> Self where F: FnMut(Beat) -> Beat {
+        self.map(|n, d, b| (n, d, f(b)))
+    }
+
     pub fn convert<I: Instrument>(&self, instrument: &mut I) -> Sound {
         Sound::chain(
             self.samples.iter()
