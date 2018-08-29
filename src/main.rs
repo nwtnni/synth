@@ -7,7 +7,7 @@ use synth::track::*;
 use synth::instrument::Bell;
 use synth::rhythm;
 use synth::dynamic;
-use synth::note;
+use synth::note::Note;
 use synth::sound;
 
 fn main() {
@@ -23,40 +23,40 @@ fn main() {
     let mut bell = Bell::new(0.005);
 
     let track = track! {
-        dynamic::MF, 120.0;
-        note::E => dynamic::MF, rhythm::Q;
-        note::D => dynamic::MF, rhythm::Q;
-        note::C => dynamic::MF, rhythm::Q;
-        note::D => dynamic::MF, rhythm::Q;
+        dynamic::MF, 120.0, 100.0;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::Q;
+        Note(0) => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::Q;
 
-        note::E => dynamic::MF, rhythm::Q;
-        note::E => dynamic::MF, rhythm::Q;
-        note::E => dynamic::MF, rhythm::H;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(4) => dynamic::MF, rhythm::H;
 
-        note::D => dynamic::MF, rhythm::Q;
-        note::D => dynamic::MF, rhythm::Q;
-        note::D => dynamic::MF, rhythm::H;
+        Note(2) => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::H;
 
-        note::E => dynamic::MF, rhythm::Q;
-        note::G => dynamic::MF, rhythm::Q;
-        note::G => dynamic::MF, rhythm::H;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(7) => dynamic::MF, rhythm::Q;
+        Note(7) => dynamic::MF, rhythm::H;
 
-        note::E => dynamic::MF, rhythm::Q;
-        note::D => dynamic::MF, rhythm::Q;
-        note::C => dynamic::MF, rhythm::Q;
-        note::D => dynamic::MF, rhythm::Q;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::Q;
+        Note(0) => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::Q;
 
-        note::E => dynamic::MF, rhythm::Q;
-        note::E => dynamic::MF, rhythm::Q;
-        note::E => dynamic::MF, rhythm::Q;
-        note::C => dynamic::MF, rhythm::Q;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(0) => dynamic::MF, rhythm::Q;
 
-        note::D => dynamic::MF, rhythm::Q;
-        note::D => dynamic::MF, rhythm::Q;
-        note::E => dynamic::MF, rhythm::Q;
-        note::D => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::Q;
+        Note(4) => dynamic::MF, rhythm::Q;
+        Note(2) => dynamic::MF, rhythm::Q;
 
-        note::C => dynamic::MF, rhythm::W;
+        Note(0) => dynamic::MF, rhythm::W;
     };
 
     let waveform = sound::Sound::Sum(vec![

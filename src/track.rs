@@ -8,13 +8,14 @@ pub struct Track {
     samples: Vec<(Note, Dynamic, Beat)>,
     dynamic: Dynamic,
     bpm: f64,
+    key: f64,
 }
 
 #[macro_export]
 macro_rules! track {
-    ( $track_dynamic:expr, $bpm:expr; $( $note:expr => $dynamic:expr, $beat:expr );* $(;)* ) => {
+    ( $track_dynamic:expr, $bpm:expr, $key:expr; $( $note:expr => $dynamic:expr, $beat:expr );* $(;)* ) => {
         {
-            let mut track = Track::new($track_dynamic, $bpm);
+            let mut track = Track::new($track_dynamic, $bpm, $key);
             $(
                 track.push($note, $dynamic, $beat);
             )*
@@ -24,11 +25,12 @@ macro_rules! track {
 }
 
 impl Track {
-    pub fn new(dynamic: Dynamic, bpm: f64) -> Self {
+    pub fn new(dynamic: Dynamic, bpm: f64, key: f64) -> Self {
         Track {
             samples: Vec::new(),
             dynamic,
             bpm,
+            key,
         }
     }
 
@@ -44,6 +46,7 @@ impl Track {
                 .collect(),
             dynamic: self.dynamic,
             bpm: self.bpm,
+            key: self.key,
         }
     }
 
@@ -65,7 +68,7 @@ impl Track {
                 .map(|(note, dynamic, beat)| {
                     let dynamic = *dynamic * self.dynamic;
                     let duration = *beat * (60.0 / self.bpm);
-                    instrument.sing(*note, dynamic, duration)
+                    instrument.sing(*note, dynamic, duration, self.key)
                 })
         )
     }

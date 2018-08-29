@@ -5,7 +5,7 @@ use envelope::Envelope;
 use dynamic::Dynamic;
 
 pub trait Instrument {
-    fn sing(&mut self, note: Note, dynamic: Dynamic, sec: f64) -> Sound;
+    fn sing(&mut self, note: Note, dynamic: Dynamic, sec: f64, key: f64) -> Sound;
 }
 
 pub struct Bell {
@@ -19,12 +19,12 @@ impl Bell {
 }
 
 impl Instrument for Bell {
-    fn sing(&mut self, note: Note, dynamic: Dynamic, sec: f64) -> Sound {
+    fn sing(&mut self, note: Note, dynamic: Dynamic, sec: f64, key: f64) -> Sound {
         Sound::Wave(
             Wave::new(
                 Shape::Sawtooth,
                 dynamic.into(),
-                note.into(),
+                note.in_key(key),
             )
         )
         .envelop(
