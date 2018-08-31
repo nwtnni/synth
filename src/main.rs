@@ -9,6 +9,7 @@ use synth::rhythm;
 use synth::dynamic;
 use synth::note::Note;
 use synth::sound;
+use synth::scale::*;
 
 fn main() {
     let spec = hound::WavSpec {
@@ -22,42 +23,11 @@ fn main() {
 
     let mut bell = Bell::new(0.005);
 
-    let track = track! {
-        dynamic::MF, 120.0, 100.0;
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(2) => dynamic::MF, rhythm::Q;
-        Note(0) => dynamic::MF, rhythm::Q;
-        Note(2) => dynamic::MF, rhythm::Q;
-
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(4) => dynamic::MF, rhythm::H;
-
-        Note(2) => dynamic::MF, rhythm::Q;
-        Note(2) => dynamic::MF, rhythm::Q;
-        Note(2) => dynamic::MF, rhythm::H;
-
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(7) => dynamic::MF, rhythm::Q;
-        Note(7) => dynamic::MF, rhythm::H;
-
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(2) => dynamic::MF, rhythm::Q;
-        Note(0) => dynamic::MF, rhythm::Q;
-        Note(2) => dynamic::MF, rhythm::Q;
-
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(0) => dynamic::MF, rhythm::Q;
-
-        Note(2) => dynamic::MF, rhythm::Q;
-        Note(2) => dynamic::MF, rhythm::Q;
-        Note(4) => dynamic::MF, rhythm::Q;
-        Note(2) => dynamic::MF, rhythm::Q;
-
-        Note(0) => dynamic::MF, rhythm::W;
-    };
+    let mut track = Track::new(dynamic::MF, 60.0, 261.626);
+    
+    for note in Scale::new(Shape::Minor).take(15) {
+        track.push(note, dynamic::MF, rhythm::E); 
+    }
 
     let waveform = sound::Sound::Sum(vec![
         track.convert(&mut bell),

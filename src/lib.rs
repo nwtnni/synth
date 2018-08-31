@@ -6,6 +6,7 @@ pub mod sound;
 pub mod filter;
 pub mod wave;
 pub mod note;
+pub mod scale;
 pub mod instrument;
 pub mod rhythm;
 pub mod dynamic;
