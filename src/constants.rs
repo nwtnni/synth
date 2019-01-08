@@ -1,6 +1,11 @@
 pub const SAMPLE_RATE: f64 = 44100.0;
+pub const NYQUIST_RATE: f64 = SAMPLE_RATE / 2.0;
 
 pub const DELTA: f64 = 1.0 / SAMPLE_RATE;
+
+pub const TAU: f64 = std::f64::consts::PI * 2.0;
+pub const FRAC_2_PI: f64 = std::f64::consts::FRAC_2_PI;
+pub const FRAC_4_PI: f64 = std::f64::consts::FRAC_2_PI * 2.0;
 
 pub const C4: f64 = 261.626;
 pub const D4: f64 = 293.665;

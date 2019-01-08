@@ -1,26 +1,29 @@
-use std::f64::consts::PI;
+use constants;
 
-use constants::DELTA;
+fn silence(_: f64, _: f64, _: f64) -> f64 {
+    0.0
+}
 
-const SILENCE: &'static [f64; 1] = &[
-    0.0,
-];
+fn sine(amplitude: f64, frequency: f64, time: f64) -> f64 {
+    amplitude * (constants::TAU * frequency * time).sin()
+}
 
-const SINE: &'static [f64; 1] = &[
-    1.0,
-];
+fn sawtooth(amplitude: f64, frequency: f64, time: f64) -> f64 {
+    (1..).map(|n| n as f64)
+        .map(|n| (1.0 / n, n))
+        .take_while(|(_, df)| *df < constants::NYQUIST_RATE)
+        .map(|(da, df)| amplitude * da * (constants::TAU * frequency * df * time).sin())
+        .sum::<f64>() * constants::FRAC_2_PI
+}
 
-const SAWTOOTH: &'static [f64; 10] = &[
-    1.0,  2.0,  3.0,  4.0,  5.0,
-    6.0,  7.0,  8.0,  9.0,  10.0,
-];
-
-const SQUARE: &'static [f64; 10] = &[
-    1.0,  3.0,  5.0,  7.0,  9.0,
-    11.0, 13.0, 15.0, 17.0, 19.0,
-];
-
-const TAU: f64 = PI * 2.0;
+fn square(amplitude: f64, frequency: f64, time: f64) -> f64 {
+    (1..).filter(|n| n & 1 == 0)
+        .map(|n| n as f64)
+        .map(|n| (1.0 / n, n))
+        .take_while(|(_, frequency)| *frequency < constants::NYQUIST_RATE)
+        .map(|(da, df)| amplitude * da * (constants::TAU * frequency * df * time).sin())
+        .sum::<f64>() * constants::FRAC_4_PI
+}
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Mode {
@@ -63,21 +66,12 @@ pub enum Shape {
 }
 
 impl Shape {
-    fn coefficients(&self) -> impl Iterator<Item = &'static f64> {
+    fn eval(&self, amplitude: f64, frequency: f64, time: f64) -> f64 {
         match self {
-        | Shape::Silence => SILENCE.iter(),
-        | Shape::Sine => SINE.iter(),
-        | Shape::Sawtooth => SAWTOOTH.iter(),
-        | Shape::Square => SQUARE.iter(),
-        }
-    }
-
-    fn size(&self) -> f64 {
-        match self {
-        | Shape::Silence => SILENCE.len() as f64,
-        | Shape::Sine => SINE.len() as f64,
-        | Shape::Sawtooth => SAWTOOTH.len() as f64,
-        | Shape::Square => SQUARE.len() as f64,
+        | Shape::Silence => silence(amplitude, frequency, time),
+        | Shape::Sine => sine(amplitude, frequency, time),
+        | Shape::Sawtooth => sawtooth(amplitude, frequency, time),
+        | Shape::Square => square(amplitude, frequency, time),
         }
     }
 }
@@ -87,11 +81,8 @@ impl Iterator for Wave {
     type Item = f64;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let next = self.shape.coefficients()
-            .map(|coefficient| self.amplitude * (coefficient * TAU * self.frequency * self.time).sin())
-            .sum::<f64>() / self.shape.size();
-
-        self.time += DELTA;
+        let next = self.shape.eval(self.amplitude, self.frequency, self.time);
+        self.time += constants::DELTA;
         Some(next)
     }
 }
