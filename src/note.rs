@@ -28,7 +28,7 @@ impl Note {
         Note(self.0 - 12)
     }
 
-    pub fn in_key(self, key: f64) -> f64 {
+    pub fn in_key(self, key: f32) -> f32 {
         key * SEMITONE.powi(self.0)
     }
 }

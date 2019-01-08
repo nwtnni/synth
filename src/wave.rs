@@ -1,28 +1,28 @@
 use constants;
 
-fn silence(_: f64, _: f64, _: f64) -> f64 {
+fn silence(_: f32, _: f32, _: f32) -> f32 {
     0.0
 }
 
-fn sine(amplitude: f64, frequency: f64, time: f64) -> f64 {
+fn sine(amplitude: f32, frequency: f32, time: f32) -> f32 {
     amplitude * (constants::TAU * frequency * time).sin()
 }
 
-fn sawtooth(amplitude: f64, frequency: f64, time: f64) -> f64 {
-    (1..).map(|n| n as f64)
+fn sawtooth(amplitude: f32, frequency: f32, time: f32) -> f32 {
+    (1..).map(|n| n as f32)
         .map(|n| (1.0 / n, n))
         .take_while(|(_, df)| *df < constants::NYQUIST_RATE)
         .map(|(da, df)| amplitude * da * (constants::TAU * frequency * df * time).sin())
-        .sum::<f64>() * constants::FRAC_2_PI
+        .sum::<f32>() * constants::FRAC_2_PI
 }
 
-fn square(amplitude: f64, frequency: f64, time: f64) -> f64 {
+fn square(amplitude: f32, frequency: f32, time: f32) -> f32 {
     (1..).filter(|n| n & 1 == 0)
-        .map(|n| n as f64)
+        .map(|n| n as f32)
         .map(|n| (1.0 / n, n))
         .take_while(|(_, frequency)| *frequency < constants::NYQUIST_RATE)
         .map(|(da, df)| amplitude * da * (constants::TAU * frequency * df * time).sin())
-        .sum::<f64>() * constants::FRAC_4_PI
+        .sum::<f32>() * constants::FRAC_4_PI
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -33,14 +33,14 @@ pub enum Mode {
 
 #[derive(Copy, Clone, Debug)]
 pub struct Wave {
-    amplitude: f64, 
-    frequency: f64,
-    time: f64,
+    amplitude: f32, 
+    frequency: f32,
+    time: f32,
     shape: Shape,
 }
 
 impl Wave {
-    pub fn new(shape: Shape, amplitude: f64, frequency: f64) -> Self {
+    pub fn new(shape: Shape, amplitude: f32, frequency: f32) -> Self {
         Wave {
             amplitude,
             frequency,
@@ -49,7 +49,7 @@ impl Wave {
         }
     }
 
-    pub fn apply(&mut self, mode: Mode, f: &Fn(f64) -> f64) {
+    pub fn apply(&mut self, mode: Mode, f: &Fn(f32) -> f32) {
         match mode {
         | Mode::Amplitude => self.amplitude = f(self.amplitude),
         | Mode::Frequency => self.frequency = f(self.frequency),
@@ -66,7 +66,7 @@ pub enum Shape {
 }
 
 impl Shape {
-    fn eval(&self, amplitude: f64, frequency: f64, time: f64) -> f64 {
+    fn eval(&self, amplitude: f32, frequency: f32, time: f32) -> f32 {
         match self {
         | Shape::Silence => silence(amplitude, frequency, time),
         | Shape::Sine => sine(amplitude, frequency, time),
@@ -78,7 +78,7 @@ impl Shape {
 
 impl Iterator for Wave {
 
-    type Item = f64;
+    type Item = f32;
 
     fn next(&mut self) -> Option<Self::Item> {
         let next = self.shape.eval(self.amplitude, self.frequency, self.time);

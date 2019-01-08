@@ -1,7 +1,7 @@
 use std::ops::Mul;
 
 #[derive(Copy, Clone, Debug, PartialEq, PartialOrd)]
-pub struct Beat(f64);
+pub struct Beat(f32);
 
 pub const W: Beat = Beat(4.0000);
 pub const H: Beat = Beat(2.0000);
@@ -24,10 +24,10 @@ impl Beat {
     }
 }
 
-impl Mul<f64> for Beat {
-    type Output = f64;
+impl Mul<f32> for Beat {
+    type Output = f32;
 
-    fn mul(self, other: f64) -> f64 {
+    fn mul(self, other: f32) -> f32 {
         self.0 * other
     }
 }

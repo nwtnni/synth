@@ -1,40 +1,40 @@
-use std::f64::consts::PI;
+use std::f32::consts::PI;
 
 use constants::{DELTA, SAMPLE_RATE};
 
-const TAU: f64 = PI * 2.0;
+const TAU: f32 = PI * 2.0;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Envelope {
     shape: Shape,
-    time: f64,
+    time: f32,
 }
 
 #[derive(Debug, Copy, Clone)]
 pub enum Shape {
     Line {
-        slope: f64,
+        slope: f32,
     },
 
     Exp {
-        ratio: f64,
+        ratio: f32,
     },
 
     Sine {
-        amplitude: f64,
-        frequency: f64,
+        amplitude: f32,
+        frequency: f32,
     },
 }
 
 impl Envelope {
-    pub fn linear(slope: f64) -> Self {
+    pub fn linear(slope: f32) -> Self {
         Envelope {
             shape: Shape::Line { slope: slope / SAMPLE_RATE },
             time: 0.0,
         }
     }
 
-    pub fn exponential(ratio: f64) -> Self {
+    pub fn exponential(ratio: f32) -> Self {
         Envelope {
             shape: Shape::Exp {
                 ratio: (ratio.ln() / SAMPLE_RATE).exp(),
@@ -43,7 +43,7 @@ impl Envelope {
         }
     }
 
-    pub fn sine(amplitude: f64, frequency: f64) -> Self {
+    pub fn sine(amplitude: f32, frequency: f32) -> Self {
         Envelope {
             shape: Shape::Sine { amplitude, frequency },
             time: 0.0,
@@ -53,7 +53,7 @@ impl Envelope {
 
 impl Iterator for Envelope {
 
-    type Item = Box<Fn(f64) -> f64>;
+    type Item = Box<Fn(f32) -> f32>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let time = self.time;

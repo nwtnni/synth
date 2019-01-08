@@ -9,11 +9,11 @@ pub enum Sound {
     Seq(Vec<Sound>),
     Sum(Vec<Sound>),
     Sub(Box<Sound>, Box<Sound>),
-    Clip(f64, Box<Sound>),
+    Clip(f32, Box<Sound>),
 }
 
 impl Sound {
-    pub fn clip(self, time: f64) -> Self {
+    pub fn clip(self, time: f32) -> Self {
         Sound::Clip(time, Box::new(self))
     }
 
@@ -37,7 +37,7 @@ impl Sound {
         Sound::Seq(seq)
     }
 
-    fn apply(&mut self, mode: Mode, f: &Fn(f64) -> f64) {
+    fn apply(&mut self, mode: Mode, f: &Fn(f32) -> f32) {
         match self {
         | Sound::Wave(wave) => wave.apply(mode, f),
         | Sound::Env(_, _, sound) => sound.apply(mode, f),
@@ -57,7 +57,7 @@ impl Into<Sound> for Wave {
 
 impl Iterator for Sound {
 
-    type Item = f64;
+    type Item = f32;
 
     fn next(&mut self) -> Option<Self::Item> {
         match self {

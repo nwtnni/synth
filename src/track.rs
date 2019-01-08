@@ -7,8 +7,8 @@ use sound::Sound;
 pub struct Track {
     samples: Vec<(Note, Dynamic, Beat)>,
     dynamic: Dynamic,
-    bpm: f64,
-    key: f64,
+    bpm: f32,
+    key: f32,
 }
 
 #[macro_export]
@@ -25,7 +25,7 @@ macro_rules! track {
 }
 
 impl Track {
-    pub fn new(dynamic: Dynamic, bpm: f64, key: f64) -> Self {
+    pub fn new(dynamic: Dynamic, bpm: f32, key: f32) -> Self {
         Track {
             samples: Vec::new(),
             dynamic,

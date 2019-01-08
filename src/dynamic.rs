@@ -1,7 +1,7 @@
 use std::ops::Mul;
 
 #[derive(Copy, Clone, Debug, PartialOrd, PartialEq)]
-pub struct Dynamic(f64);
+pub struct Dynamic(f32);
 
 pub const PPP: Dynamic = Dynamic(1.00);
 pub const PP:  Dynamic = Dynamic(2.50);
@@ -16,8 +16,8 @@ impl Default for Dynamic {
     fn default() -> Self { MF }
 }
 
-impl Into<f64> for Dynamic {
-    fn into(self) -> f64 {
+impl Into<f32> for Dynamic {
+    fn into(self) -> f32 {
         self.0
     }
 }
